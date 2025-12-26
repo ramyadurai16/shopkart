@@ -1,0 +1,42 @@
+{% extends 'shop/layouts/main.html' %}
+{% block title %}
+  My Addresses | ShopKart
+{% endblock title %}
+{% block content %}
+<div class="container mt-5 pt-4">
+
+<h4>My Addresses</h4>
+<hr>
+
+{% if addresses %}
+  {% for addr in addresses %}
+  <div class="card mb-2">
+    <div class="card-body">
+      <strong>{{ addr.full_name }}</strong><br>
+      {{ addr.address_line }}<br>
+      {{ addr.city }}, {{ addr.state }} - {{ addr.pincode }}<br>
+      📞 {{ addr.phone }}
+    </div>
+  </div>
+  {% endfor %}
+{% else %}
+<p class="text-danger">No address added yet</p>
+{% endif %}
+
+<hr>
+<h5>Add New Address</h5>
+
+<form method="POST">
+  {% csrf_token %}
+  <input class="form-control mb-2" name="full_name" placeholder="Full Name" required>
+  <input class="form-control mb-2" name="phone" placeholder="Phone" required>
+  <textarea class="form-control mb-2" name="address" placeholder="Address" required></textarea>
+  <input class="form-control mb-2" name="city" placeholder="City" required>
+  <input class="form-control mb-2" name="state" placeholder="State" required>
+  <input class="form-control mb-2" name="pincode" placeholder="Pincode" required>
+
+  <button class="btn btn-success">Save Address</button>
+</form>
+
+</div>
+{% endblock %}

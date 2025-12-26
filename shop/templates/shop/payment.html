@@ -1,0 +1,162 @@
+{% extends "shop/layouts/main.html" %}
+{% block title %}Payment | ShopKart{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+
+      <h4 class="fw-bold mb-4">Choose Payment Method</h4>
+
+      <form method="POST" action="{% url 'payment_success' %}">
+        {% csrf_token %}
+        <input type="hidden" name="address_id" value="{{ address_id }}">
+        <input type="hidden" name="payment_mode" id="paymentMode">
+        <input type="hidden" name="upi_app" id="upiApp">
+
+        <!-- 🔹 UPI -->
+        <div class="pay-box" onclick="selectPayment('UPI', this)">
+          <div class="d-flex align-items-center">
+            <img src="https://img.icons8.com/color/48/google-pay.png">
+            <div class="ms-3">
+              <h6 class="mb-0">UPI</h6>
+              <small class="text-muted">Pay using any UPI app</small>
+            </div>
+          </div>
+          <span class="checkmark">✔</span>
+
+          <!-- UPI APPS -->
+          <div class="upi-apps">
+            <button type="button" onclick="selectUpi('Google Pay')" class="upi-btn">
+              <img src="https://img.icons8.com/color/32/google-pay.png"> Google Pay
+            </button>
+            <button type="button" onclick="selectUpi('PhonePe')" class="upi-btn">
+              <img src="https://img.icons8.com/color/32/phone-pe.png"> PhonePe
+            </button>
+            <button type="button" onclick="selectUpi('Paytm')" class="upi-btn">
+              <img src="https://img.icons8.com/color/32/paytm.png"> Paytm
+            </button>
+          </div>
+        </div>
+
+        <!-- 🔹 CARD -->
+        <div class="pay-box" onclick="selectPayment('CARD', this)">
+          <div class="d-flex align-items-center">
+            <img src="https://img.icons8.com/color/48/bank-card-back-side.png">
+            <div class="ms-3">
+              <h6 class="mb-0">Debit / Credit Card</h6>
+              <small class="text-muted">Visa, MasterCard, RuPay</small>
+            </div>
+          </div>
+          <span class="checkmark">✔</span>
+        </div>
+
+        <!-- 🔹 NETBANKING -->
+        <div class="pay-box" onclick="selectPayment('NETBANKING', this)">
+          <div class="d-flex align-items-center">
+            <img src="https://img.icons8.com/color/48/bank.png">
+            <div class="ms-3">
+              <h6 class="mb-0">Net Banking</h6>
+              <small class="text-muted">All Indian Banks</small>
+            </div>
+          </div>
+          <span class="checkmark">✔</span>
+        </div>
+
+        <button class="btn btn-success w-100 py-2 mt-4 fw-bold">
+          Pay Securely
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+<style>
+.pay-box {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  background: #fff;
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.pay-box:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.pay-box.active {
+  border: 2px solid #198754;
+  background: #f2fff8;
+}
+
+.checkmark {
+  position: absolute;
+  right: 18px;
+  top: 18px;
+  font-size: 20px;
+  color: #198754;
+  display: none;
+}
+
+.pay-box.active .checkmark {
+  display: block;
+}
+
+/* 🔹 UPI APPS */
+.upi-apps {
+  display: none;
+  margin-top: 15px;
+  animation: slideDown 0.3s ease;
+}
+
+.pay-box.active .upi-apps {
+  display: flex;
+  gap: 10px;
+}
+
+.upi-btn {
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: 0.2s;
+}
+
+.upi-btn:hover {
+  border-color: #198754;
+  background: #f1fff7;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+function selectPayment(mode, element) {
+  document.getElementById("paymentMode").value = mode;
+
+  document.querySelectorAll(".pay-box").forEach(box => {
+    box.classList.remove("active");
+  });
+
+  element.classList.add("active");
+}
+
+function selectUpi(app) {
+  document.getElementById("upiApp").value = app;
+}
+</script>
+
+{% endblock %}

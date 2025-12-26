@@ -1,0 +1,153 @@
+{% extends "shop/layouts/main.html" %}
+{% load static %}
+{% block title %}Order Details | ShopKart{% endblock %}
+
+{% block content %}
+<div class="container my-5 pt-4" style="max-width: 1100px;">
+
+  <!-- ORDER HEADER -->
+  <div class="card shadow-sm mb-4 mt-3">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+      <div>
+        <h5 class="mb-1">Order #{{ order.id }}</h5>
+        <small class="text-muted">
+          Ordered on {{ order.created_at|date:"d M Y, h:i A" }}
+        </small>
+      </div>
+
+      <div class="text-end">
+        <span class="badge bg-success px-3 py-2">
+          {{ order.payment_mode }}
+        </span>
+        <div class="fw-bold fs-5 mt-1">
+          ₹{{ order.total_price }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- LEFT COLUMN -->
+    <div class="col-md-8">
+
+      <!-- ORDER PROGRESS -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h6 class="mb-3">📦 Order Progress</h6>
+
+        <div class="progress" style="height: 12px;">
+            
+          {% if order.status == 'PLACED' %}
+            <div class="progress-bar bg-secondary" style="width:25%" role="progressbar">
+             Placed
+            </div>
+
+          {% elif order.status == 'SHIPPED' %}
+            <div class="progress-bar bg-primary" style="width:50%" role="progressbar">
+              Shipped
+            </div>
+
+          {% elif order.status == 'OUT_FOR_DELIVERY' %}
+            <div class="progress-bar bg-warning" style="width:75%" role="progressbar">
+              Out for Delivery
+            </div>
+
+          {% elif order.status == 'DELIVERED' %}
+            <div class="progress-bar bg-success" style="width:100%" role="progressbar">
+              Delivered
+            </div>
+
+          {% elif order.status == 'CANCELLED' %}
+            <div class="progress-bar bg-danger" style="width:100%" role="progressbar">
+              Cancelled
+            </div>
+          {% endif %}
+        </div>
+
+          <div class="d-flex justify-content-between small mt-2 text-muted">
+            <span>Placed</span>
+            <span>Shipped</span>
+            <span>Out for Delivery</span>
+            <span>Delivered</span>
+          </div>
+
+          {% if order.shipped_at %}
+            <small class="text-muted d-block mt-2">🚚 Shipped: {{ order.shipped_at|date:"d M Y, h:i A" }}</small>
+          {% endif %}
+          {% if order.delivered_at %}
+            <small class="text-muted d-block">🎉 Delivered: {{ order.delivered_at|date:"d M Y, h:i A" }}</small>
+          {% endif %}
+          {% if order.cancelled_at %}
+            <small class="text-danger d-block">❌ Cancelled: {{ order.cancelled_at|date:"d M Y, h:i A" }}</small>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ORDER ITEMS -->
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="mb-3">🛍 Items</h6>
+
+          {% for item in order.items.all %}
+          <div class="row align-items-center mb-3">
+            <div class="col-2">
+              <img src="{{ item.product.product_image.url }}"
+                   class="img-fluid rounded border">
+            </div>
+
+            <div class="col-6">
+              <div class="fw-semibold">{{ item.product.name }}</div>
+              <small class="text-muted">Qty: {{ item.quantity }}</small>
+            </div>
+
+            <div class="col-4 text-end fw-bold">
+              ₹{{ item.price }}
+            </div>
+          </div>
+          <hr>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col-md-4">
+
+      <!-- DELIVERY ADDRESS -->
+      <div class="card shadow-sm mb-4">
+        <div class="card-body">
+          <h6 class="mb-3">📍 Delivery Address</h6>
+          <p class="fw-semibold mb-1">{{ address.full_name }}</p>
+          <p class="mb-1">{{ address.address_line }}</p>
+          <p class="mb-1">
+            {{ address.city }}, {{ address.state }} - {{ address.pincode }}
+          </p>
+          {% if address.phone %}
+          <p class="mb-0">📞 {{ address.phone }}</p>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- ACTIONS -->
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <a href="{% url 'download_invoice' order.id %}"
+             class="btn btn-outline-success w-100 mb-2">
+            📄 Download Invoice
+          </a>
+
+          {% if order.status == "PLACED" %}
+          <form method="post" action="{% url 'cancel_order' order.id %}">
+            {% csrf_token %}
+            <button class="btn btn-danger w-100">
+              ❌ Cancel Order
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

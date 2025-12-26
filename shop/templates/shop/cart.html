@@ -1,0 +1,85 @@
+{% extends 'shop/layouts/main.html' %}
+{% block title %}
+  My Cart | ShopKart
+{% endblock title %}
+
+{% block content %}
+<section class="bg-light py-4 my-5" style="min-height:600px;">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h4 class="mb-3">Cart Items</h4>
+        <hr style="border-color:#b8bfc2;">
+      </div>
+
+      <table class="table table-bordered align-middle text-center">
+        <tr>
+          <th>Image</th>
+          <th>Product Name</th>
+          <th>Unit</th>
+          <th>Quantity</th>
+          <th>Amount</th>
+          <th>Remove</th>
+        </tr>
+
+        {% for item in cart %}
+        <tr>
+          <!-- Image -->
+          <td>
+            <a href="{% url 'product_detail_by_id' item.product.id %}">
+              <img src="{{ item.product.product_image.url }}"
+                   height="75"
+                   alt="{{ item.product.name }}">
+            </a>
+          </td>
+
+          <!-- Product Name CENTER + COLOR -->
+          <td class="text-center">
+            <a href="{% url 'product_detail_by_id' item.product.id %}"
+               class="cart-product-name">
+              {{ item.product.name }}
+            </a>
+          </td>
+
+          <!-- Unit price -->
+          <td>₹ {{ item.product.selling_price|stringformat:'d' }}</td>
+          <td>{{ item.product_qty }}</item></td>
+           <!-- Amount -->
+          <td class="amt">₹ {{ item.total_cost|stringformat:'d' }}</td>
+
+          <!-- Remove -->
+          <td>
+            <a href="{% url 'remove_cart' item.id %}"
+               onclick="return confirm('Are you sure?')"
+               class="btn btn-danger btn-sm">
+              <i class="fa fa-trash"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+
+        <tr>
+          <td colspan="4" class="text-end fw-bold">Total Amount</td>
+          <td id="net" class="fw-bold">₹ 0</td>
+          <td>
+            <a href="{% url 'checkout' %}" class="btn btn-primary btn-sm">
+              <i class="fa fa-check-circle"></i> Check Out
+            </a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Total calculation
+  const nodes = document.querySelectorAll('.amt');
+  let total = 0;
+  nodes.forEach(el => {
+    total += Number(el.textContent.replace("₹", ""));
+  });
+  document.getElementById("net").innerText = "₹ " + total;
+</script>
+
+{% endblock content %}

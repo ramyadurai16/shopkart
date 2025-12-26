@@ -1,0 +1,231 @@
+{% extends "shop/layouts/main.html" %}
+{% block title %}Checkout | ShopKart{% endblock %}
+
+{% block content %}
+<section class="py-4 my-5">
+  <div class="container">
+    <h4 class="mb-3">Checkout</h4>
+    <hr>
+
+    <div class="row">
+
+      <!-- LEFT : ADDRESS + PAYMENT -->
+      <div class="col-md-7">
+
+        <!-- DELIVERY ADDRESS -->
+        <div class="card mb-3">
+          <div class="card-header fw-bold">Delivery Address</div>
+          <div class="card-body">
+
+            {% if addresses %}
+              {% for addr in addresses %}
+              <div class="form-check mb-3">
+                <input class="form-check-input"
+                       type="radio"
+                       name="address"
+                       value="{{ addr.id }}"
+                       {% if forloop.first %}checked{% endif %}>
+
+                <label class="form-check-label">
+                  <strong>{{ addr.full_name }}</strong> ({{ addr.phone }})<br>
+                  {{ addr.address_line }}, {{ addr.city }},
+                  {{ addr.state }} - {{ addr.pincode }}
+                </label>
+
+                <button type="button"
+                        class="btn btn-sm btn-link p-0 d-block"
+                        onclick="openEditAddress(
+                        '{{ addr.id }}',
+                        '{{ addr.full_name }}',
+                        '{{ addr.phone }}',
+                        '{{ addr.address_line }}',
+                        '{{ addr.city }}',
+                        '{{ addr.state }}',
+                        '{{ addr.pincode }}')">
+                  Edit
+                </button>
+              </div>
+              {% endfor %}
+
+              <button type="button"
+                      class="btn btn-outline-primary"
+                      onclick="openAddAddress()">
+                + Add New Address
+              </button>
+            {% else %}
+              <p class="text-danger">No address found</p>
+              <button type="button"
+                      class="btn btn-primary"
+                      onclick="openAddAddress()">
+                Add Address
+              </button>
+            {% endif %}
+
+          </div>
+        </div>
+
+        <!-- ADDRESS MODAL -->
+        <div class="modal fade" id="addressModal">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <form id="addressForm">
+                {% csrf_token %}
+                <input type="hidden" name="address_id" id="address_id">
+
+                <div class="modal-header">
+                  <h5 class="modal-title">Add / Edit Address</h5>
+                  <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                  <input class="form-control mb-2" name="full_name" id="full_name" placeholder="Full Name" required>
+                  <input class="form-control mb-2" name="phone" id="phone" placeholder="Phone" required>
+                  <textarea class="form-control mb-2" name="address_line" id="address" placeholder="Address" required></textarea>
+                  <input class="form-control mb-2" name="city" id="city" placeholder="City" required>
+                  <input class="form-control mb-2" name="state" id="state" placeholder="State" required>
+                  <input class="form-control mb-2" name="pincode" id="pincode" placeholder="Pincode" required>
+                </div>
+
+                <div class="modal-footer">
+                  <button type="submit" class="btn btn-success">
+                    Save Address
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONTINUE -->
+        <button id="continueBtn"
+                class="btn btn-warning w-100 mt-3 fw-bold">
+          Use this address
+        </button>
+
+        <!-- PAYMENT METHOD -->
+        <div class="card shadow-sm d-none mt-3" id="paymentSection">
+          <div class="card-header fw-bold">Payment Method</div>
+
+          <div class="card-body">
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" name="payment" value="COD" checked>
+              <label class="form-check-label fw-bold">
+                Cash on Delivery / Pay on Delivery
+              </label>
+              <small class="d-block">Cash, UPI & Cards accepted</small>
+            </div>
+
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="payment" value="ONLINE">
+              <label class="form-check-label fw-bold">
+                Pay using UPI
+              </label>
+              <small class="d-block">Google Pay, PhonePe, Paytm</small>
+            </div>
+
+            <button id="placeOrderBtn"
+                    class="btn btn-warning w-100 mt-3 fw-bold">
+              Place Order
+            </button>
+          </div>
+        </div>
+
+      </div> <!-- ✅ END col-md-7 -->
+
+
+      <!-- RIGHT : ORDER SUMMARY -->
+      <div class="col-md-5">
+        <div class="card position-sticky" style="top:100px;">
+          <div class="card-header fw-bold">Order Summary</div>
+
+          <div class="card-body">
+            {% for item in items %}
+            <div class="d-flex justify-content-between mb-2">
+              <div>
+                <strong>{{ item.product.name }}</strong><br>
+                Qty: {{ item.qty }}
+              </div>
+              <div>₹ {{ item.total }}</div>
+            </div>
+            <hr>
+            {% endfor %}
+
+            <h5 class="text-end">
+              Total: ₹ {{ total }}
+            </h5>
+          </div>
+        </div>
+      </div> <!-- ✅ END col-md-5 -->
+
+    </div> <!-- ✅ END row -->
+
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+{{ block.super }}
+
+<script>
+function getCookie(name) {
+  let value = `; ${document.cookie}`;
+  let parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop().split(';').shift();
+}
+const csrftoken = getCookie('csrftoken');
+
+function openAddAddress(){
+  document.getElementById("address_id").value="";
+  document.querySelectorAll("#addressModal input,textarea").forEach(e=>e.value="");
+  new bootstrap.Modal(document.getElementById('addressModal')).show();
+}
+
+function openEditAddress(id,name,phone,address,city,state,pincode){
+  address_id.value=id;
+  full_name.value=name;
+  phone.value=phone;
+  address.value=address;
+  city.value=city;
+  state.value=state;
+  pincode.value=pincode;
+  new bootstrap.Modal(addressModal).show();
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+  addressForm?.addEventListener("submit", function(e){
+    e.preventDefault();
+    fetch("/save-address/",{
+      method:"POST",
+      headers:{ "X-CSRFToken":csrftoken },
+      body:new FormData(this)
+    }).then(()=>location.reload());
+  });
+
+  continueBtn?.addEventListener("click",()=>{
+    if(!document.querySelector('input[name="address"]:checked')){
+      alert("Select address"); return;
+    }
+    paymentSection.classList.remove("d-none");
+    paymentSection.scrollIntoView({behavior:"smooth"});
+  });
+
+  placeOrderBtn?.addEventListener("click",()=>{
+    fetch("/place-order/",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "X-CSRFToken":csrftoken
+      },
+      body:JSON.stringify({
+        address_id:document.querySelector('input[name="address"]:checked').value,
+        payment_mode:document.querySelector('input[name="payment"]:checked').value
+      })
+    }).then(r=>r.json()).then(d=>{
+      if(d.redirect_url) location.href=d.redirect_url;
+    });
+  });
+
+});
+</script>
+{% endblock %}

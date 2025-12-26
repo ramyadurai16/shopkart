@@ -1,0 +1,67 @@
+{% extends "shop/layouts/main.html" %}
+
+{% block content %}
+<div class="container my-4">
+
+  <h4>📦 Order #{{ order.id }}</h4>
+
+  <p><strong>User:</strong> {{ order.user.username }}</p>
+  <p><strong>Total:</strong> ₹{{ order.total_price }}</p>
+  <p><strong>Payment:</strong> {{ order.payment_mode }}</p>
+
+  <hr>
+
+  <h5>🚚 Items</h5>
+  {% for item in order.items.all %}
+    <p>
+      {{ item.product.name }} × {{ item.quantity }}  
+      – ₹{{ item.price }}
+    </p>
+  {% endfor %}
+
+  <hr>
+
+  <h5>📍 Address</h5>
+  <p>{{ address.full_name }}</p>
+  <p>{{ address.address_line }}</p>
+  <p>{{ address.city }} - {{ address.pincode }}</p>
+
+  <hr>
+  
+  <h5>🛠 Update Order Status</h5>
+  
+  <form action="{% url 'update_order_status' order.id %}" method="post">
+  {% csrf_token %}
+
+  <div class="row align-items-center">
+    <div class="col-md-4">
+      <select name="status" class="form-select">
+        <option value="PLACED" {% if order.status == "PLACED" %}selected{% endif %}>
+          Order Placed
+        </option>
+        <option value="SHIPPED" {% if order.status == "SHIPPED" %}selected{% endif %}>
+          Shipped
+        </option>
+        <option value="OUT_FOR_DELIVERY"
+          {% if order.status == "OUT_FOR_DELIVERY" %}selected{% endif %}>
+          Out for Delivery
+        </option>
+        <option value="DELIVERED" {% if order.status == "DELIVERED" %}selected{% endif %}>
+          Delivered
+        </option>
+        <option value="CANCELLED" {% if order.status == "CANCELLED" %}selected{% endif %}>
+          Cancelled
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <button type="submit" class="btn btn-success">
+        💾 Update Status
+      </button>
+    </div>
+  </div>
+</form>
+
+</div>
+{% endblock %}

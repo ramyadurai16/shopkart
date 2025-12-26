@@ -1,0 +1,106 @@
+{% extends 'shop/layouts/main.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-5 pt-4">
+
+    <!-- 🔹 BREADCRUMB NAVIGATION -->
+     <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            
+            <li class="breadcrumb-item">
+                <a href="{% url 'home' %}">Home</a>
+            </li>
+            
+            <li class="breadcrumb-item">
+                <a href="{% url 'collections' %}">Collections</a>
+            </li>
+            
+            {% if selected_category %}
+            <li class="breadcrumb-item">
+                <a href="{% url 'product_list' %}?category={{ selected_category }}">
+                    {{ selected_category }}
+                </a>
+            </li>
+            {% endif %}
+            
+            {% if last_product %}
+            <li class="breadcrumb-item active">
+                {{ last_product }}
+            </li>
+            {% endif %}
+        
+        </ol>
+    </nav>    
+
+    <h3 class="mb-4">
+    {% if query and selected_category %}
+        Search result for "{{ query }}" in {{ selected_category }}
+    {% elif query %}
+        Search result for "{{ query }}"
+    {% elif selected_category %}
+        Products in {{ selected_category }}
+    {% else %}
+        All Products
+    {% endif %}
+    </h3>
+
+    {% if products %}
+    <div class="row">
+
+        {% for product in products %}
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow-sm">
+
+                {% if product.product_image %}
+                <img src="{{ product.product_image.url }}"
+                     class="card-img-top"
+                     style="height:200px; object-fit:cover;"
+                     alt="{{ product.name }}">
+                {% else %}
+                <img src="{% static 'images/no-image.png' %}"
+                     class="card-img-top"
+                     style="height:200px; object-fit:cover;">
+                {% endif %}
+
+                <div class="card-body">
+                    <h6>{{ product.name }}</h6>
+                    <p class="text-muted mb-1">
+                        ₹ {{ product.selling_price|stringformat:'d' }}
+                    </p>
+
+                    <a href="{% url 'product_details' product.category.name product.name %}"
+                       class="btn btn-sm btn-primary w-100">
+                        View
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+    
+    {% else %}
+    <div class="alert alert-warning text-center">
+
+    {% if query and selected_category %}
+        No products found for "<strong>{{ query }}</strong>" in
+        <strong>{{ selected_category }}</strong> 😕
+
+    {% elif selected_category %}
+        No products found in <strong>{{ selected_category }}</strong> 😕
+
+    {% elif query %}
+        No products found for "<strong>{{ query }}</strong>" 😕
+
+    {% else %}
+        No products found 😕
+    {% endif %}
+</div>
+{% endif %}
+
+</div>
+
+{% endblock %}

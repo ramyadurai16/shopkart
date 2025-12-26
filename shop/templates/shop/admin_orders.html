@@ -1,0 +1,63 @@
+{% extends "shop/layouts/main.html" %}
+{% block title %} Admin Orders | ShopKart{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+
+  <h4 class="mb-4">📦 All Orders (Admin)</h4>
+
+  {% for order in orders %}
+  <div class="card mb-3 shadow-sm">
+
+    <div class="card-body">
+      <div class="row">
+
+        <div class="col-md-3">
+          <strong>Order ID</strong><br>
+          #{{ order.id }}
+        </div>
+
+        <div class="col-md-3">
+          <strong>User</strong><br>
+          {{ order.user.username }}
+        </div>
+
+        <div class="col-md-3">
+          <strong>Total</strong><br>
+          ₹{{ order.total_price }}
+        </div>
+
+        <div class="col-md-3">
+          <strong>Status</strong><br>
+          {% if order.status == "PLACED" %}
+            <span class="badge bg-secondary">PLACED</span>
+          {% elif order.status == "SHIPPED" %}
+            <span class="badge bg-primary">SHIPPED</span>
+          {% elif order.status == "OUT_FOR_DELIVERY" %}
+            <span class="badge bg-warning text-dark">OUT FOR DELIVERY</span>
+          {% elif order.status == "DELIVERED" %}
+            <span class="badge bg-success">DELIVERED</span>
+          {% elif order.status == "CANCELLED" %}
+            <span class="badge bg-danger">CANCELLED</span>
+          {% endif %}
+
+        </div>
+      </div>
+
+      <div class="text-end mt-3">
+        <a href="{% url 'admin_order_details' order.id %}"
+           class="btn btn-outline-primary btn-sm">
+           View Order
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+  {% empty %}
+  <p>No orders found.</p>
+  {% endfor %}
+
+</div>
+{% endblock %}

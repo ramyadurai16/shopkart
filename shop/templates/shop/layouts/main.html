@@ -1,0 +1,133 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+    <title>
+        {% block title %}
+        {% endblock title %}
+        </title>
+        <link rel="stylesheet"
+         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+        <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  </head>
+    <body class="d-flex flex-column min-vh-100">
+      {% include "shop/inc/navbar.html" %}
+      <!-- ✅ ADD THIS BLOCK EXACTLY HERE -->
+      {% if messages %}
+        <div class="container mt-3">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      <!-- ✅ END -->
+      <main class="flex-fill">
+      {% block content %}
+      {% endblock content %}
+      </main>
+      {% block scripts %}
+  <script>
+const searchInput = document.getElementById("search-input");
+const suggestionsBox = document.getElementById("suggestions");
+let activeIndex = -1;
+
+searchInput.addEventListener("input", function () {
+    const query = this.value.trim();
+    activeIndex = -1;
+
+    if (query.length < 2) {
+        suggestionsBox.style.display = "none";
+        return;
+    }
+
+    const categorySelect = document.getElementById("category-select");
+    const category = categorySelect ? categorySelect.value : "";
+    fetch(`/search-suggestions/?term=${query}&category=${category}`)
+        .then(response => response.json())
+        .then(data => {
+            suggestionsBox.innerHTML = "";
+
+            if (data.length === 0) {
+                suggestionsBox.style.display = "none";
+                return;
+            }
+            
+            data.forEach(item => {
+              const div = document.createElement("a");
+              div.href = item.url;
+              div.className = "list-group-item list-group-item-action";
+              div.innerHTML = `
+              <img src="${item.image}" width="40" height="40" class="me-2 rounded">
+              <div class="flex-grow-1">
+                <div class="fw-semibold text-truncate">${item.name}</div>
+                <small class="text-success">₹ ${item.price}</small>
+              </div>
+            </div>
+          `;
+          suggestionsBox.appendChild(div);
+        });
+        suggestionsBox.style.display = "block";
+      });
+});
+/* Keyboard support */
+searchInput.addEventListener("keydown", function (e) {
+    const items = suggestionsBox.querySelectorAll("a");
+
+    if (e.key === "ArrowDown") {
+        activeIndex = (activeIndex + 1) % items.length;
+    }
+    if (e.key === "ArrowUp") {
+        activeIndex = (activeIndex - 1 + items.length) % items.length;
+    }
+    if (e.key === "Enter" && activeIndex >= 0) {
+        e.preventDefault();
+        items[activeIndex].click();
+    }
+
+    items.forEach(i => i.classList.remove("active"));
+    if (items[activeIndex]) items[activeIndex].classList.add("active");
+});
+
+document.addEventListener("click", (e) => {
+  if (!e.target.closest(".position-relative")) {
+    suggestionsBox.style.display = "none";
+  }
+});
+
+const voiceBtn = document.getElementById("voiceBtn");
+
+if ("webkitSpeechRecognition" in window) {
+  const recognition = new webkitSpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.continuous = false;
+
+  voiceBtn.addEventListener("click", () => {
+    recognition.start();
+  });
+
+  recognition.onresult = function (event) {
+    const text = event.results[0][0].transcript;
+    searchInput.value = text;
+    searchInput.dispatchEvent(new Event("input"));
+  };
+} else {
+  voiceBtn.style.display = "none";
+}
+</script>
+
+{% endblock scripts %}
+
+    {% include "shop/inc/footer.html" %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+  </body>
+</html>
