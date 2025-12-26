@@ -53,6 +53,19 @@ The application is designed with a clean UI, user-friendly navigation, and scala
 
 ## 📸 Screenshots
 
+📸 Screenshots
+ ├── Home Page
+ ├── Collections
+ ├── Latest Offers
+ ├── Product Details Page
+ ├── Orders Page
+ ├── Orders DetailsPage
+ ├── Invoice Page
+ ├── Wishlist Page
+ └── Cart Page
+
+---
+
 ### 🏠 Home Page & Collections
 - Navbar with categories, search bar, cart, orders, and favourites
 - Category listing with images
@@ -67,6 +80,29 @@ The application is designed with a clean UI, user-friendly navigation, and scala
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/a37e9d5f-b11a-46b0-b310-dbd2eef07abb" width="800"/>
+</p>
+
+---
+
+### 🔥 Latest Offers Section
+- Category based offers
+- Discounted prices
+- Mobile & accessories deals
+  
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/99782520-8aae-40de-9329-a08bd2bf5320" width="800"/>
+</p>
+
+---
+
+### 📱 Product Details Page
+- Product name, brand & description
+- Offer price & original price display
+- Quantity selection
+- Add to Cart functionality
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/fa470190-554a-48ee-ac2f-fccfc1f6243c" width="800"/>
 </p>
 
 ---
