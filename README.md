@@ -239,14 +239,14 @@ GitHub: https://github.com/ramyadurai16
 
 ✅ GitHub Topics
 
-django
-python
-ecommerce
-mysql
-bootstrap
-web-development
-django-ecommerce
-razorpay-integration
-full-stack
+- django
+- python
+- ecommerce
+- mysql
+- bootstrap
+- web-development
+- django-ecommerce
+- razorpay-integration
+- full-stack
 
 ---
